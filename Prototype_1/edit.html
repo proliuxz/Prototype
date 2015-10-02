@@ -50,11 +50,15 @@
         <button id='hideImageOverlay' type="button" onclick="hideImageOverlay();">hideImageOverlay</button>
         <br/>
         <button id='addDrawOverlay' type="button" onclick="addDrawOverlay();">addDrawOverlay</button>
+        <br/>
+        <button id='addMarker' type="button" onclick="addMarker();">addMarker</button>
+        <br/>
+        <button id='addAnimate' type="button" onclick="addAnimate();">addAnimate</button>        
+        <br/>
+        <button id='test' type="button" onclick="test();">test</button>
     </div>    
+    
 <script>
-//    L.mapbox.accessToken = 'pk.eyJ1IjoieHRlY2hkZXYiLCJhIjoiY2lmNjZrdXBhMDNqanN1a3QweDByYTR5cyJ9.LR9aYogSA7MQtP7XuUFmLQ';
-//
-//    L.mapbox.map('map-one', 'mapbox.streets').setView([1.306, 103.77], 15);
     
     var map;
     
@@ -63,11 +67,13 @@
         L.mapbox.accessToken = 'pk.eyJ1IjoieHRlY2hkZXYiLCJhIjoiY2lmNjZrdXBhMDNqanN1a3QweDByYTR5cyJ9.LR9aYogSA7MQtP7XuUFmLQ';
         // Create a map in the div #map
         var map = L.mapbox.map('map', 'xtechdev.cif66kt840au8rtktyynwpzya',{
+                minZoom: 4,
+                maxZoom: 16,
                 legendControl: {
                     position: 'topright'
                 }
             }).setView([1.306, 103.77], 15);
-        //var map = L.mapbox.map('map', 'mapbox.streets').setView([1.306, 103.77], 16);
+        
         
         var click = document.getElementById('click'),
             mousemove = document.getElementById('mousemove');
@@ -80,6 +86,7 @@
 
     }
     
+    var layerGroup;
     function loadElement(){
         var geojson = [
         {
@@ -136,12 +143,15 @@
 
         ];
 
-        var myLayer = L.mapbox.featureLayer().addTo(map);
+        var myLayer = L.mapbox.featureLayer();
         myLayer.setGeoJSON(geojson);
-
+        layerGroup = L.layerGroup().addLayer(myLayer).addTo(map);
+        //layerGroup.;
+        
         map.legendControl.addLegend('<strong>First Map of Astons of UTown </strong>');
     
     }
+    
     
     var imageOverlay;
     function addImageOverlay(){
@@ -154,49 +164,52 @@
     
     }
     function hideImageOverlay(){
-        imageOverlay.setOpacity(0);
+        //imageOverlay.setOpacity(0);
+        if (map.hasLayer(imageOverlay)) 
+            map.removeLayer(imageOverlay);
     }
+    
     
     function addDrawOverlay(){
         var featureGroup = L.featureGroup().addTo(map);
 
-        // Define circle options
-        // http://leafletjs.com/reference.html#circle
-        var circle_options = {
-          color: '#fff',      // Stroke color
-          opacity: 1,         // Stroke opacity
-          weight: 10,         // Stroke weight
-          fillColor: '#000',  // Fill color
-          fillOpacity: 0.6    // Fill opacity
-        };
-
-        var circle_one = L.circle([38.89415, -77.03738], 20, circle_options).addTo(featureGroup);
-        var circle_two = L.circle([38.89415, -77.03578], 20, circle_options).addTo(featureGroup);
-
-        // Create array of lat,lon points
-        var line_points = [
-          [38.893596444352134, -77.0381498336792],
-          [38.89337933372204, -77.03792452812195],
-          [38.89316222242831, -77.03761339187622],
-          [38.893028615148424, -77.03731298446655],
-          [38.892920059048464, -77.03691601753235],
-          [38.892903358095296, -77.03637957572937],
-          [38.89301191422077, -77.03592896461487],
-          [38.89316222242831, -77.03549981117249],
-          [38.89340438498248, -77.03514575958252],
-          [38.893596444352134, -77.0349633693695]
-        ];
-
-        // Define polyline options
-        // http://leafletjs.com/reference.html#polyline
-        var polyline_options = {
-          color: '#000'
-        };
-
-        // Defining a polygon here instead of a polyline will connect the
-        // endpoints and fill the path.
-        // http://leafletjs.com/reference.html#polygon
-        var polyline = L.polyline(line_points, polyline_options).addTo(featureGroup);
+//        // Define circle options
+//        // http://leafletjs.com/reference.html#circle
+//        var circle_options = {
+//          color: '#fff',      // Stroke color
+//          opacity: 1,         // Stroke opacity
+//          weight: 10,         // Stroke weight
+//          fillColor: '#000',  // Fill color
+//          fillOpacity: 0.6    // Fill opacity
+//        };
+//
+//        var circle_one = L.circle([38.89415, -77.03738], 20, circle_options).addTo(featureGroup);
+//        var circle_two = L.circle([38.89415, -77.03578], 20, circle_options).addTo(featureGroup);
+//
+//        // Create array of lat,lon points
+//        var line_points = [
+//          [38.893596444352134, -77.0381498336792],
+//          [38.89337933372204, -77.03792452812195],
+//          [38.89316222242831, -77.03761339187622],
+//          [38.893028615148424, -77.03731298446655],
+//          [38.892920059048464, -77.03691601753235],
+//          [38.892903358095296, -77.03637957572937],
+//          [38.89301191422077, -77.03592896461487],
+//          [38.89316222242831, -77.03549981117249],
+//          [38.89340438498248, -77.03514575958252],
+//          [38.893596444352134, -77.0349633693695]
+//        ];
+//
+//        // Define polyline options
+//        // http://leafletjs.com/reference.html#polyline
+//        var polyline_options = {
+//          color: '#000'
+//        };
+//
+//        // Defining a polygon here instead of a polyline will connect the
+//        // endpoints and fill the path.
+//        // http://leafletjs.com/reference.html#polygon
+//        var polyline = L.polyline(line_points, polyline_options).addTo(featureGroup);
 
         var drawControl = new L.Control.Draw({
         edit: {
@@ -208,6 +221,109 @@
           featureGroup.addLayer(e.layer);
         });
     
+    }
+    
+    var marker;
+    function addMarker(){   
+        var myIcon = L.icon({
+            iconUrl: 'http://static4.wikia.nocookie.net/__cb20131121214007/destinypedia/images/7/71/Information_Icon.svg',
+            iconRetinaUrl: 'http://static4.wikia.nocookie.net/__cb20131121214007/destinypedia/images/7/71/Information_Icon.svg',
+            iconSize: [38, 95],
+            iconAnchor: [22, 94],
+            popupAnchor: [-3, -76],
+            //shadowUrl: 'my-icon-shadow.png',
+            //shadowRetinaUrl: 'my-icon-shadow@2x.png',
+            shadowSize: [68, 95],
+            shadowAnchor: [22, 94]
+        });
+
+        marker = L.marker([1.30353, 103.7684], 
+                          {icon: myIcon,
+                           title: 'staff01',
+                           alt: 'uid01',
+            }).addTo(map);
+        
+        marker.addEventListener("click", function(e){ 
+            alert("Hello World!"); 
+        });
+    }
+    
+    
+    
+    function addAnimate(){
+    
+        
+        // MIT-licensed code by Benjamin Becquet
+        // https://github.com/bbecquet/Leaflet.PolylineDecorator
+        L.RotatedMarker = L.Marker.extend({
+          options: { angle: 0 },
+          _setPos: function(pos) {
+            L.Marker.prototype._setPos.call(this, pos);
+            if (L.DomUtil.TRANSFORM) {
+              // use the CSS transform rule if available
+              this._icon.style[L.DomUtil.TRANSFORM] += ' rotate(' + this.options.angle + 'deg)';
+            } else if (L.Browser.ie) {
+              // fallback for IE6, IE7, IE8
+              var rad = this.options.angle * L.LatLng.DEG_TO_RAD,
+              costheta = Math.cos(rad),
+              sintheta = Math.sin(rad);
+              this._icon.style.filter += ' progid:DXImageTransform.Microsoft.Matrix(sizingMethod=\'auto expand\', M11=' +
+                costheta + ', M12=' + (-sintheta) + ', M21=' + sintheta + ', M22=' + costheta + ')';
+            }
+          }
+        });
+        L.rotatedMarker = function(pos, options) {
+            return new L.RotatedMarker(pos, options);
+        };
+
+        var marker = L.rotatedMarker(new L.LatLng(1.30, 103), {
+          icon: L.icon({
+            iconUrl: 'https://www.mapbox.com/maki/renders/airport-24@2x.png',
+            iconSize: [24, 24],
+          }),
+          draggable: true
+        });
+
+        marker.addTo(map);
+
+        var direction = 0, manual = false;
+
+        window.setInterval(function() {
+          var ll = marker.getLatLng();
+          ll.lat += Math.cos(direction) / 100;
+          ll.lng += Math.sin(direction) / 100;
+          marker.options.angle = direction * (180 / Math.PI);
+          marker.setLatLng(ll);
+          if (!manual && Math.random() > 0.95) {
+            direction += (Math.random() - 0.5) / 2;
+          }
+        }, 10);
+
+        // Add manual control of the airplane with left and right arrow keys, just because
+        document.body.addEventListener('keydown', function(e) {
+          if (e.which == 37) {
+            direction -= 0.1; manual = true;
+          }
+          if (e.which == 39) {
+            direction += 0.1; manual = true;
+          }
+        }, true);
+    
+    }
+    
+    
+    function test(){
+
+        i=0;
+        map.eachLayer(function(layer) {
+            // Each layer object is passed in order.
+            // The callback function calls a, b, then c
+            //map.removeLayer(l);
+            //layer.bindPopup('Hello');
+            i++;
+            
+        });
+        console.log(i);
     }
     
 </script>
