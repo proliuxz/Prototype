@@ -53,15 +53,18 @@
         <br/>
         <button id='addMarker' type="button" onclick="addMarker();">addMarker</button>
         <br/>
-        <button id='addAnimate' type="button" onclick="addAnimate();">addAnimate</button>        
+        <button id='addFlightAnimate' type="button" onclick="addFlightAnimate();">addFlightAnimate</button>        
+        <br/>
+        <button id='addMovingPoint' type="button" onclick="addMovingPoint();">addMovingPoint</button>
+        <button id='removeMovingPoint' type="button" onclick="removeMovingPoint();">removeMovingPoint</button>
         <br/>
         <button id='test' type="button" onclick="test();">test</button>
     </div>    
     
 <script>
     
-    var map;
     
+    var map;
     function loadMap(){
         // Provide your access token
         L.mapbox.accessToken = 'pk.eyJ1IjoieHRlY2hkZXYiLCJhIjoiY2lmNjZrdXBhMDNqanN1a3QweDByYTR5cyJ9.LR9aYogSA7MQtP7XuUFmLQ';
@@ -223,6 +226,7 @@
     
     }
     
+    //clickable marker
     var marker;
     function addMarker(){   
         var myIcon = L.icon({
@@ -244,13 +248,17 @@
             }).addTo(map);
         
         marker.addEventListener("click", function(e){ 
-            alert("Hello World!"); 
+            //alert("Hello World!"); 
+            
+            console.log(marker.getLatLng());
+            console.log(marker.options.title);
+            console.log(marker.options.alt);
         });
     }
     
     
     
-    function addAnimate(){
+    function addFlightAnimate(){
     
         
         // MIT-licensed code by Benjamin Becquet
@@ -310,6 +318,39 @@
         }, true);
     
     }
+    
+    // control marker moving
+    var movingMarker;
+    function addMovingPoint(){
+        movingMarker = L.marker([1.306, 103.77], {
+            icon: L.mapbox.marker.icon({
+              'marker-color': '#f86767'
+            })
+        });
+
+        var t = 0;
+        window.setInterval(function() {
+            // Making a lissajous curve just for fun.
+            // Create your own animated path here.
+//            marker.setLatLng(L.latLng(
+//                Math.cos(t * 0.5) * 50,
+//                Math.sin(t) * 50));
+//            t += 0.1;
+            var latlng = movingMarker.getLatLng();
+            latlng.lat += 0.001;
+            latlng.lng += 0.001;
+            movingMarker.setLatLng(latlng);
+            
+        }, 500);
+
+        movingMarker.addTo(map);
+    }
+    
+    function removeMovingPoint(){
+        if(map.hasLayer(movingMarker))
+            map.removeLayer(movingMarker);
+    }
+    
     
     
     function test(){
