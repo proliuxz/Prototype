@@ -132,7 +132,7 @@
                 "type": "LineString",
                 "coordinates": [
                   [103.77, 1.306],
-                  [103.77, 1.305],
+                  [103.77, 1.305]
                 ]
               },
               "properties": {
@@ -352,19 +352,47 @@
     }
     
     
-    
+    var flg=false;
+    var removedLayers=new Array();
     function test(){
+        
+        if(flg==false){
+        
+            i=0;
+            map.featureLayer.eachLayer(function(layer) {
+                // Each layer object is passed in order.
+                // The callback function calls a, b, then c
+                console.log(layer);
+                if(layer._geojson){
+                    console.log(layer._geojson.features[0].properties.title);
+                }
 
-        i=0;
-        map.eachLayer(function(layer) {
-            // Each layer object is passed in order.
-            // The callback function calls a, b, then c
-            //map.removeLayer(l);
-            //layer.bindPopup('Hello');
-            i++;
+                var groupName;
+                if(layer.options.title){
+                    groupName = layer.options.title;
+                }else if(layer.feature.properties.title){
+                    groupName = layer.feature.properties.title;
+                }
+
+                if(groupName.lastIndexOf('test', 0) !== 0){
+                    removedLayers.push(layer);
+                    map.removeLayer(layer);
+                }
+                i++;
+                console.log(i);
+            });
+        
+            flg=true;
+        }else{
             
-        });
-        console.log(i);
+            for(index=0;index<removedLayers.length;index++){
+                removedLayers[index].addTo(map);
+            }
+            removedLayers=new Array();
+            flg=false;
+        }
+        
+        
     }
     
 </script>
