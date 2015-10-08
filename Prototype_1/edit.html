@@ -71,11 +71,11 @@
         // Create a map in the div #map
         var map = L.mapbox.map('map', 'xtechdev.cif66kt840au8rtktyynwpzya',{
                 minZoom: 4,
-                maxZoom: 16,
+                maxZoom: 17,
                 legendControl: {
                     position: 'topright'
                 }
-            }).setView([1.306, 103.77], 15);
+            }).setView([1.31537, 103.81222], 16);
         
         
         var click = document.getElementById('click'),
@@ -374,7 +374,7 @@
                     groupName = layer.feature.properties.title;
                 }
 
-                if(groupName.lastIndexOf('test', 0) !== 0){
+                if(groupName.lastIndexOf('race_route', 0) === 0){
                     removedLayers.push(layer);
                     map.removeLayer(layer);
                 }
