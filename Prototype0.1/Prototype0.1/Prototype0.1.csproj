@@ -80,7 +80,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Fleck-master\src\Fleck\Fleck.csproj">
+    <ProjectReference Include="..\Fleck\src\Fleck\Fleck.csproj">
       <Project>{8b12d929-afa9-4307-beff-2ed0f1070fee}</Project>
       <Name>Fleck</Name>
     </ProjectReference>

@@ -22,7 +22,7 @@ namespace Prototype0._1
         {
             FleckLog.Level = LogLevel.Debug;
             List<IWebSocketConnection> allSockets = new List<IWebSocketConnection>();
-            WebSocketServer server = new WebSocketServer("ws://10.10.0.183:8181");
+            WebSocketServer server = new WebSocketServer("ws://10.10.0.239:8181");
             server.Start(socket =>
             {
                 socket.OnOpen = () =>
