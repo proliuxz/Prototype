@@ -1,0 +1,8 @@
+D:\Prototype\Prototype0.2\Prototype0.1\bin\Prototype0.1.dll.config
+D:\Prototype\Prototype0.2\Prototype0.1\bin\Prototype0.1.dll
+D:\Prototype\Prototype0.2\Prototype0.1\bin\Prototype0.1.pdb
+D:\Prototype\Prototype0.2\Prototype0.1\bin\Fleck.dll
+D:\Prototype\Prototype0.2\Prototype0.1\bin\Fleck.pdb
+D:\Prototype\Prototype0.2\Prototype0.1\obj\Debug\Prototype0.2.csprojResolveAssemblyReference.cache
+D:\Prototype\Prototype0.2\Prototype0.1\obj\Debug\Prototype0.1.dll
+D:\Prototype\Prototype0.2\Prototype0.1\obj\Debug\Prototype0.1.pdb
