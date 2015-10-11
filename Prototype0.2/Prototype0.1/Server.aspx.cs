@@ -27,8 +27,58 @@ namespace Prototype0._1
 
             public void change()
             {
-                px = px + 0.001;
-                py = py + 0.001;
+                Random ran = new Random();
+                int n = ran.Next();
+                switch(n%8)
+                {
+                    case 0:
+                        {
+                            px = Util.AddDoubleData(px,0.001,3);
+                            py = Util.AddDoubleData(py, 0.001, 3);
+                            break;
+                        }
+                    case 1: 
+                        {
+                            px = Util.AddDoubleData(px, 0.001, 3);
+                            py = Util.MinDoubleData(py, 0.001, 3);
+                            break;
+                        }
+
+                    case 2:
+                        {
+                            px = Util.MinDoubleData(px, 0.001, 3);
+                            py = Util.AddDoubleData(py, 0.001, 3);
+                            break;
+                        }
+                    case 3:
+                        {
+                            px = Util.MinDoubleData(px, 0.001, 3);
+                            py = Util.MinDoubleData(py, 0.001, 3);
+                            break;
+                        }
+                    case 4:
+                        {
+                            px = Util.AddDoubleData(px, 0.001, 3);
+                            break;
+                        }
+                    case 5:
+                        {
+                            py = Util.AddDoubleData(py, 0.001, 3);
+                            break;
+                        }
+
+                    case 6:
+                        {
+                            px = Util.MinDoubleData(px, 0.001, 3);
+                            break;
+                        }
+                    case 7:
+                        {
+                            py = Util.MinDoubleData(py, 0.001, 3);
+                            break;
+                        }
+                }
+
             }
            
         }
@@ -43,7 +93,7 @@ namespace Prototype0._1
         {
             FleckLog.Level = LogLevel.Debug;
             List<IWebSocketConnection> allSockets = new List<IWebSocketConnection>();
-            WebSocketServer server = new WebSocketServer("ws://10.10.0.239:8181");
+            WebSocketServer server = new WebSocketServer("ws://10.10.0.98:8181");
             server.Start(socket =>
             {
                 socket.OnOpen = () =>
@@ -60,15 +110,25 @@ namespace Prototype0._1
                 };
             });
 
+            List<Position> posList = new List<Position>();
+            for (int i = 0; i < 10; i++)
+            {
+                var pos = new Position(i, 1.306, 103.770);
+                posList.Add(pos);
+            }
+
             while (true)
             {
-                var pos = new Position(1, 1.306, 103.77);
-                var json = new JavaScriptSerializer().Serialize(pos);
-                Console.WriteLine(json);
-                String input = json;
-                foreach (var socket in allSockets.ToList())
+                foreach(var pos in posList)
                 {
-                    socket.Send(input);
+                    pos.change();
+                    var json = new JavaScriptSerializer().Serialize(pos);
+                    Console.WriteLine(json);
+                    String input = json;
+                    foreach (var socket in allSockets.ToList())
+                    {
+                        socket.Send(input);
+                    }
                 }
                 Thread.Sleep(1000);
             }

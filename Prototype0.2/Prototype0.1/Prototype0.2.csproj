@@ -66,6 +66,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Client.html" />
+    <Content Include="edit.html" />
+    <Content Include="Client0.2.html" />
     <Content Include="Server.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -78,6 +80,7 @@
     <Compile Include="Server.aspx.designer.cs">
       <DependentUpon>Server.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fleck\src\Fleck\Fleck.csproj">
