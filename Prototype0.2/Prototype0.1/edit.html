@@ -329,66 +329,33 @@
 
 
         // create a new websocket and connect
-        window.ws = new wsImpl('ws://10.10.0.98:8181/');
+        window.ws = new wsImpl('ws://10.10.0.66:8181/');
 
         // when data is comming from the server, this metod is called
         ws.onmessage = function (evt) {
             var obj = eval('(' + evt.data + ')');
-            var idNum = obj.id;
-            console.log(idNum + ";" + obj.px + ";" + obj.py);
-            lat[idNum] = obj.px;
-            lng[idNum] = obj.py;
+            if (mk[obj.id] == null) {
+                mk[obj.id] = L.marker([obj.px, obj.py], {
+                    icon: L.mapbox.marker.icon({
+                        'marker-color': '#f86767'
+                    })
+                });
+                mk[obj.id].addTo(map);
+                console.log("add");
+            }
+            else {
+                var latlng = mk[obj.id].getLatLng();
+                latlng.lat = obj.px;
+                latlng.lng = obj.py;
+                mk[obj.id].setLatLng(latlng);
+                console.log("changed");
+            }
+            
         };
     }
-
+    var mk = new Array(5000);
     function addMovingPoint() {
-        startsocket();
-
-            var movingMarker;
-            movingMarker = L.marker([1.306, 103.77], {
-
-                icon: L.mapbox.marker.icon({
-                    'marker-color': '#f86767'
-                })
-            });
-            window.setInterval(function () {
-                var latlng = movingMarker.getLatLng();
-                latlng.lat = lat[0];
-                latlng.lng = lng[0];
-                movingMarker.setLatLng(latlng);
-            }, 500);
-            movingMarker.addTo(map);
-
-
-            var movingMarker2;
-            movingMarker2 = L.marker([1.306, 103.77], {
-
-                icon: L.mapbox.marker.icon({
-                    'marker-color': '#f86767'
-                })
-            });
-            window.setInterval(function () {
-                var latlng = movingMarker2.getLatLng();
-                latlng.lat = lat[4];
-                latlng.lng = lng[4];
-                movingMarker2.setLatLng(latlng);
-            }, 500);
-            movingMarker2.addTo(map);
-
-            var movingMarker3;
-            movingMarker3 = L.marker([1.306, 103.77], {
-
-                icon: L.mapbox.marker.icon({
-                    'marker-color': '#f86767'
-                })
-            });
-            window.setInterval(function () {
-                var latlng = movingMarker3.getLatLng();
-                latlng.lat = lat[7];
-                latlng.lng = lng[7];
-                movingMarker3.setLatLng(latlng);
-            }, 500);
-            movingMarker3.addTo(map);
+            startsocket();
         
     }
     

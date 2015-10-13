@@ -29,7 +29,7 @@ namespace Prototype0._1
             {
                 Random ran = new Random();
                 int n = ran.Next();
-                switch(n%8)
+                switch(n%9)
                 {
                     case 0:
                         {
@@ -77,6 +77,9 @@ namespace Prototype0._1
                             py = Util.MinDoubleData(py, 0.001, 3);
                             break;
                         }
+                    case 8:{
+                        break;
+                    }
                 }
 
             }
@@ -93,7 +96,7 @@ namespace Prototype0._1
         {
             FleckLog.Level = LogLevel.Debug;
             List<IWebSocketConnection> allSockets = new List<IWebSocketConnection>();
-            WebSocketServer server = new WebSocketServer("ws://10.10.0.98:8181");
+            WebSocketServer server = new WebSocketServer("ws://10.10.0.66:8181");
             server.Start(socket =>
             {
                 socket.OnOpen = () =>
@@ -111,7 +114,7 @@ namespace Prototype0._1
             });
 
             List<Position> posList = new List<Position>();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 100; i++)
             {
                 var pos = new Position(i, 1.306, 103.770);
                 posList.Add(pos);
