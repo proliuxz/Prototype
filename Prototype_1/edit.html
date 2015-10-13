@@ -15,6 +15,14 @@
     body { margin:0; padding:0; }
     .map { position:absolute; top:0; bottom:0; width:90%; }
     div.op {position: absolute; border-style: solid; border-width: medium; position:absolute; top:0; bottom:0; right: 0; width:10%; }
+      
+    .blink_me {
+        animation: blinker 1s linear infinite;
+    }
+
+    @keyframes blinker {  
+        50% { opacity: 0.0; }
+    }
   </style>
     
     <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-draw/v0.2.2/leaflet.draw.css' rel='stylesheet' />
@@ -60,7 +68,7 @@
         <br/>
         <button id='test' type="button" onclick="test();">test</button>
         <button type='button' onclick='bindClickToConsole()'>bindClickToConsole</button>
-        <button type='button' onclick=''>Blink</button>
+        <button type='button' onclick='blink()'>Blink</button>
     </div>    
     
 <script>
@@ -410,6 +418,7 @@
                 console.log(e.target.feature.geometry.coordinates);
                 console.log(e.target.feature.properties.title);
                 console.log(e.target.feature.properties.fill);
+                console.log(e.target.feature.properties["marker-color"]);
                 console.log(e.latlng.lat);
                 console.log(e.latlng.lng);
                 console.log('****click end****');
@@ -429,7 +438,15 @@
     }
     
     function blink(){
-        
+        console.log('start blink');
+        map.featureLayer.eachLayer(function(layer){
+            console.log(layer);
+            if(layer.feature.id == '7caf172c43606b0436b679d52bf5341b'){
+                console.log('add blink');
+                map.panTo(layer.getLatLng());
+                layer._icon.classList.add('blink_me');
+            } 
+        });
     }
     
 </script>
