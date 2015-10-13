@@ -1,0 +1,2 @@
+filter marker example
+https://www.mapbox.com/mapbox.js/example/v1.0.0/filtering-markers/

@@ -59,6 +59,8 @@
         <button id='removeMovingPoint' type="button" onclick="removeMovingPoint();">removeMovingPoint</button>
         <br/>
         <button id='test' type="button" onclick="test();">test</button>
+        <button type='button' onclick='bindClickToConsole()'>bindClickToConsole</button>
+        <button type='button' onclick=''>Blink</button>
     </div>    
     
 <script>
@@ -357,7 +359,7 @@
     function test(){
         
         if(flg==false){
-        
+            
             i=0;
             map.featureLayer.eachLayer(function(layer) {
                 // Each layer object is passed in order.
@@ -392,6 +394,41 @@
             flg=false;
         }
         
+        
+    }
+    
+    function bindClickToConsole(){
+        console.log('binded');
+        map.featureLayer.eachLayer(function(layer){
+            layer.on('click', function(e) {
+                console.log('****click start****');
+                map.panTo(e.latlng);
+                console.log(e);
+                console.log(e.target.feature.id);
+                console.log(e.target.feature.type);
+                console.log(e.target.feature.geometry.type);
+                console.log(e.target.feature.geometry.coordinates);
+                console.log(e.target.feature.properties.title);
+                console.log(e.target.feature.properties.fill);
+                console.log(e.latlng.lat);
+                console.log(e.latlng.lng);
+                console.log('****click end****');
+            });                                          
+        });
+//        mapLayer.eachLayer(function(marker){
+//           marker.onclick = function(){
+//               console.log(marker.getLa)
+//           } 
+//        });
+//        mapLayer.on('click', function(e) {
+//            console.log('click');
+//            console.log(e.layer.feature.type);
+//            console.log(e.layer.feature.properties.title);
+//            
+//        });
+    }
+    
+    function blink(){
         
     }
     
