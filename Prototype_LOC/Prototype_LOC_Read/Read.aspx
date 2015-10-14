@@ -9,8 +9,7 @@
 <body>
     <form id="form1" runat="server">
     <div>
-        <asp:Button ID="start" OnClick="start_Click"  runat="server"/>
-        <pre id="inc"></pre>
+        <asp:Button ID="start Read" OnClick="start_Click"  runat="server"/>
     </div>
     </form>
 </body>
