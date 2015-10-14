@@ -4,3 +4,4 @@ D:\Prototype\Prototype_LOC\Insert\bin\Debug\Insert.pdb
 D:\Prototype\Prototype_LOC\Insert\bin\Debug\MySql.Data.dll
 D:\Prototype\Prototype_LOC\Insert\obj\Debug\Insert.exe
 D:\Prototype\Prototype_LOC\Insert\obj\Debug\Insert.pdb
+D:\Prototype\Prototype_LOC\Insert\obj\Debug\Insert.csprojResolveAssemblyReference.cache
