@@ -1,0 +1,52 @@
+/******************    DDL     ******************/
+
+
+CREATE TABLE `histrorical_loc` (
+  `user_id` varchar(10) DEFAULT NULL,
+  `timestamp` timestamp NULL DEFAULT NULL,
+  `lat` double DEFAULT NULL,
+  `lon` double DEFAULT NULL
+) ENGINE=ARCHIVE DEFAULT CHARSET=utf8;
+
+CREATE TABLE `latest_loc` (
+  `user_id` varchar(10) NOT NULL,
+  `timestamp` timestamp NULL DEFAULT NULL,
+  `lat` double DEFAULT NULL,
+  `lon` double DEFAULT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE=MEMORY DEFAULT CHARSET=utf8;
+
+
+
+/******************    Insert SQL     ******************/
+
+
+INSERT INTO `latest_loc`
+(`user_id`,
+`timestamp`,
+`lat`,
+`lon`)
+
+VALUES
+(1,CURRENT_TIMESTAMP,1.030001,130.000001)
+ 
+ON DUPLICATE KEY UPDATE 
+
+`timestamp` = CURRENT_TIMESTAMP,
+`lat` = 1.030002,
+`lon` = 130.000002;
+
+
+
+
+
+
+
+INSERT INTO `historical_loc`
+(`user_id`,
+`timestamp`,
+`lat`,
+`lon`)
+
+VALUES
+(1,CURRENT_TIMESTAMP,1.030001,130.000001);
