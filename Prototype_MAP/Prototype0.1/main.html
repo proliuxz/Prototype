@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>CPIS Event Map Prototype</title>
+    <meta charset=utf-8 />
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.2.2/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.2.2/mapbox.css' rel='stylesheet' />
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-draw/v0.2.2/leaflet.draw.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-draw/v0.2.2/leaflet.draw.js'></script>
+    <link href="css/main.css" rel="stylesheet"/>
+    
+</head>
+<body>
+    <div class="map" id="map"></div>
+    <div class="filter" id="filter"></div>
+    <div class="control">
+        <button type="button" class="control-btn">Start to Track</button>
+        
+    </div>
+    <div id='output' class='ui-control'>
+        Click: <code id='click'></code><br />
+        Mousemove: <code id='mousemove'></code><br />
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
