@@ -329,7 +329,7 @@
 
 
         // create a new websocket and connect
-        window.ws = new wsImpl('ws://172.23.135.61:8181/');
+        window.ws = new wsImpl('ws://192.168.0.11:8181/');
 
         // when data is comming from the server, this metod is called
         ws.onmessage = function (evt) {
@@ -363,7 +363,8 @@
     
 
 
-    function removeMovingPoint(){
+    function removeMovingPoint() {
+        console.log(map);
         if(map.hasLayer(movingMarker))
             map.removeLayer(movingMarker);
     }

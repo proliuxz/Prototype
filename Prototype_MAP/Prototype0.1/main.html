@@ -14,7 +14,10 @@
     <div class="map" id="map"></div>
     <div class="filter" id="filter"></div>
     <div class="control">
-        <button type="button" class="control-btn">Start to Track</button>
+        <button type="button" class="control-btn" onclick="addMovingPoint()">Start Tracking</button>
+        <button type="button" class="control-btn" onclick="removeMovingPoint()">Stop Tracking</button>
+        <button type="button" class="control-btn" onclick="blinkMedicalPoint()">Medical Point Blinking</button>
+        <button type="button" class="control-btn" onclick="stopBlinking()">Stop Blinking</button>
         
     </div>
     <div id='output' class='ui-control'>
