@@ -63,7 +63,7 @@ function startsocket() {
     }
     
     // create a new websocket and connect
-    ws = new wsImpl('ws://192.168.0.11:8181/');
+    ws = new wsImpl('ws://127.0.0.1:8181/');
 
     // when data is comming from the server, this metod is called
     ws.onmessage = function (evt) {
