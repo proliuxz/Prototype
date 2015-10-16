@@ -96,7 +96,7 @@ namespace Prototype0._1
         {
             FleckLog.Level = LogLevel.Debug;
             List<IWebSocketConnection> allSockets = new List<IWebSocketConnection>();
-            WebSocketServer server = new WebSocketServer("ws://172.23.135.61:8181");
+            WebSocketServer server = new WebSocketServer("ws://192.168.0.11:8181");
             server.Start(socket =>
             {
                 socket.OnOpen = () =>

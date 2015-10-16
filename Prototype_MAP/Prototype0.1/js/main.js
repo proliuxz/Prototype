@@ -4,7 +4,7 @@ function loadMap() {
     // Provide your access token
     L.mapbox.accessToken = 'pk.eyJ1IjoieHRlY2hkZXYiLCJhIjoiY2lmNjZrdXBhMDNqanN1a3QweDByYTR5cyJ9.LR9aYogSA7MQtP7XuUFmLQ';
     // Create a map in the div #map
-    var myMap = L.mapbox.map('map', 'xtechdev.cif66kt840au8rtktyynwpzya', {
+    map = L.mapbox.map('map', 'xtechdev.cif66kt840au8rtktyynwpzya', {
         minZoom: 4,
         maxZoom: 17,
         legendControl: {
@@ -16,20 +16,159 @@ function loadMap() {
     var click = document.getElementById('click'),
         mousemove = document.getElementById('mousemove');
 
-    myMap.on('mousemove click', function (e) {
+    map.on('mousemove click', function (e) {
         window[e.type].innerHTML = e.containerPoint.toString() + ', ' + e.latlng.toString();
     });
 
-    
-
-    return myMap;
+    //return myMap;
 }
 
+function bindClickToConsole() {
+    console.log('binded');
+    map.featureLayer.eachLayer(function (layer) {
+        layer.on('click', function (e) {
+            console.log('****click start****');
+            map.panTo(e.latlng);
+            console.log(e);
+            //console.log(e.target.feature.id);
+            //console.log(e.target.feature.type);
+            //console.log(e.target.feature.geometry.type);
+            //console.log(e.target.feature.geometry.coordinates);
+            //console.log(e.target.feature.properties.title);
+            //console.log(e.target.feature.properties.fill);
+            //console.log(e.target.feature.properties["marker-color"]);
+            //console.log(e.latlng.lat);
+            //console.log(e.latlng.lng);
+            console.log('****click end****');
+        });
+    });
+}
+
+var mk = new Array(5000);
+var ws;
+
+function connectsocket() {
+    if (ws == null) {
+        startsocket();
+    } else {
+        ws.open();
+    }
+}
+
+function startsocket() {
+    var wsImpl = window.WebSocket || window.MozWebSocket;
+    if (!wsImpl) {
+        alert("Browser not supported");
+        return;
+    }
+    
+    // create a new websocket and connect
+    ws = new wsImpl('ws://192.168.0.11:8181/');
+
+    // when data is comming from the server, this metod is called
+    ws.onmessage = function (evt) {
+        var obj = eval('(' + evt.data + ')');
+        if (mk[obj.id] == null) {
+            mk[obj.id] = L.marker([obj.px, obj.py], {
+                icon: L.mapbox.marker.icon({
+                    'marker-color': '#f86767',
+                    'marker-id': obj.id
+                })
+            });
+            //mk[obj.id] = L.mapbox.featureLayer({
+            //    // this feature is in the GeoJSON format: see geojson.org
+            //    // for the full specification
+            //    type: 'Feature',
+            //    geometry: {
+            //        type: 'Point',
+            //        // coordinates here are in longitude, latitude order because
+            //        // x, y is the standard for GeoJSON and many formats
+            //        coordinates: [
+            //          obj.px,
+            //          obj.py
+            //        ]
+            //    },
+            //    properties: {
+            //        title: 'Peregrine Espresso',
+            //        description: '1718 14th St NW, Washington, DC',
+            //        // one can customize markers by adding simplestyle properties
+            //        // https://www.mapbox.com/guides/an-open-platform/#simplestyle
+            //        'marker-size': 'large',
+            //        'marker-color': '#f86767',
+            //        'marker-id': obj.id
+            //        //'marker-symbol': 'cafe'
+            //    }
+            //}).addTo(map);
+
+            //mk[obj.id].addEventListener("click", function () {
+            //    console.log(this);
+            //});
+            mk[obj.id].addTo(map);
+            
+            console.log("add");
+        }
+        else {
+            var latlng = mk[obj.id].getLatLng();
+            latlng.lat = obj.px;
+            latlng.lng = obj.py;
+            mk[obj.id].setLatLng(latlng);
+            //var name = Object.keys(mk[obj.id]._layers)[0];          
+            //mk[obj.id]._layers[name]._latlng.lat = obj.px;
+            //mk[obj.id]._layers[name]._latlng.lng = obj.py;
+            //console.log("changed");
+        }
+
+    };
+}
+
+function closesocket() {
+    ws.close();
+}
+
+function addMovingPoint() {
+    startsocket();
+}
+
+function removeMovingPoint() {
+    closesocket();
+    var i;
+    for (i = 0; i < mk.length; i++) {
+        if (mk[i]==null) {
+            continue;
+        }
+        if (map.hasLayer(mk[i]))
+            map.removeLayer(mk[i]);
+        console.log("remove");
+    }
+}
+
+function blinkMedicalPoint() {
+    map.featureLayer.eachLayer(function (layer) {
+        //console.log(layer);
+        if (layer.feature.properties.title == 'Medical Point') {
+            console.log('add blink');
+            map.panTo(layer.getLatLng());
+            layer._icon.classList.add('blink_me');
+        }
+    });
+}
+
+function stopBlinking() {
+    map.featureLayer.eachLayer(function (layer) {
+        //console.log(layer);
+        if (layer.feature.properties.title == 'Medical Point') {
+            console.log('stop blink');
+            map.panTo(layer.getLatLng());
+            layer._icon.classList.remove('blink_me');
+        }
+    });
+}
 
 (function () {
-    map = loadMap();
+    loadMap();
     var filters = document.getElementById('filter');
     map.featureLayer.on('ready', function () {
+        bindClickToConsole();
         // Collect the types of symbols in this layer. you can also just
         // hardcode an array of types if you know what you want to filter on,
         // like var types = ['foo', 'bar'];
@@ -77,4 +216,5 @@ function loadMap() {
             });
         }
     });
+    //bindClickToConsole();
 })();
