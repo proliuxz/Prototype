@@ -44,7 +44,7 @@ function bindClickToConsole() {
     });
 }
 
-var mk = new Array(5000);
+var mk = new Array();
 var ws;
 
 function connectsocket() {
@@ -140,6 +140,7 @@ function removeMovingPoint() {
             map.removeLayer(mk[i]);
         console.log("remove");
     }
+    mk = new Array();
 }
 
 function blinkMedicalPoint() {
