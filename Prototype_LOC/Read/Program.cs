@@ -111,63 +111,31 @@ namespace Read
             }
         }
 
-        public List<Loc> SelectByCondition(int begin,int end)
-        {
-            string query = "SELECT * FROM latest_loc where user_id>" + begin + "&&user_id<"+end;
-
-            //Create a list to store the result  
-            List<Loc> list = new List<Loc>();
-
-            //Open connection  
-            if (this.OpenConnection() == true)
-            {
-                //Create Command  
-                MySqlCommand cmd = new MySqlCommand(query, connection);
-                //Create a data reader and Execute the command  
-                MySqlDataReader dataReader = cmd.ExecuteReader();
-
-                //Read the data and store them in the list  
-                while (dataReader.Read())
-                {
-                    String user_id = (String)dataReader["user_id"];
-                    double lat = (double)dataReader["lat"];
-                    double lon = (double)dataReader["lon"];
-                    DateTime timestamp = (DateTime)dataReader["timestamp"];
-                    Loc loc = new Loc(user_id, lat, lon, timestamp);
-                    list.Add(loc);
-                }
-                //close Data Reader  
-                dataReader.Close();
-                //close Connection  
-                this.CloseConnection();
-                //return list to be displayed  
-                return list;
-            }
-            else
-            {
-                return list;
-            }
-        }
 
 
         static void Main(string[] args)
         {
+            SW sw = new SW();
             Program program = new Program();
-            program.Initialize("10.10.0.93", "phoenix", "phoenix", "password", "3306");
             while (true)
             {
-                
-                List<Loc> result = program.SelectByCondition(0, 0);
-                Console.WriteLine(DateTime.Now.ToString());
+                sw.start();
+                program.Initialize("10.10.0.93", "phoenix", "phoenix", "password", "3306");
+                List<Loc> result = program.Select();
+                //Console.WriteLine(DateTime.Now.ToString());
                 foreach (Loc loc in result)
                 {
-                    Console.WriteLine(loc.user_id + ";" + loc.lat + ";" + loc.lon + ";" + loc.dt.ToString());
+                    //Console.WriteLine(loc.user_id + ";" + loc.lat + ";" + loc.lon + ";" + loc.dt.ToString());
                 }
-                Console.WriteLine(DateTime.Now.ToString());
+                //Console.WriteLine(DateTime.Now.ToString());
+                program.CloseConnection();
+                sw.end();
+                Console.WriteLine(sw.getTime());
+                sw.reset();
                 program.CloseConnection();
                 System.Threading.Thread.Sleep(5000);
             }
-            
+            Console.ReadKey();
         }
     }
 }

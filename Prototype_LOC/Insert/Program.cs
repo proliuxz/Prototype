@@ -19,13 +19,11 @@ namespace Insert
         static string ins_latest = 
             " INSERT INTO `latest_loc` " +
             " (`user_id`, " +
-            " `timestamp`, " +
             " `lat`, " +
             " `lon`) " + 
             " VALUES " +
-            " (@ID,CURRENT_TIMESTAMP,@LAT,@LON) " +
+            " (@ID,@LAT,@LON) " +
             " ON DUPLICATE KEY UPDATE  " +
-            " `timestamp` = CURRENT_TIMESTAMP, " +
             " `lat` = @LAT, " +
             " `lon` = @LON ";
 
@@ -41,25 +39,28 @@ namespace Insert
 
         static void Main(string[] args)
         {
-            int start;
-            if (0 == args.Length)
-            {
-                start = 0;
-            }
-            else
-            {
-                start = Int32.Parse(args[0]);
-            }
+            int start = 0;
+            int end = Int32.Parse(args[0]);
+//            if (0 == args.Length)
+//            {
+//                start = 0;
+//            }
+//            else
+//            {
+//                start = Int32.Parse(args[0]);
+//            }
             while (true)
             {
-                Console.WriteLine(DateTime.Now);
-
-                int end = start + 2500;
+                //Console.WriteLine(DateTime.Now);
+                SW sw = new SW();
+                sw.start();
+//                int end = start + 2500;
 
                 try
                 {
-                    Initialize("10.10.1.36", "phoenix", "phoenix", "password", "3306");
-
+                   
+                    Initialize("10.10.0.93", "phoenix", "phoenix", "password", "3306");
+                    
                     for (int i = start; i < end; i++)
                     {
 
@@ -75,7 +76,9 @@ namespace Insert
                 {
                     CloseDown();
                 }
-                Console.WriteLine(end);
+                sw.end();
+
+                Console.WriteLine(sw.getTime());
 
                 //Console.WriteLine(DateTime.Now);
             }
@@ -118,22 +121,22 @@ namespace Insert
                 throw ex;
             }
 
-            // historical
-            command = new MySqlCommand(ins_historical, connection);
-            command.Parameters.AddWithValue("@ID", userid);
-            command.Parameters.AddWithValue("@LAT", lat);
-            command.Parameters.AddWithValue("@LON", lon);
+            //// historical
+            //command = new MySqlCommand(ins_historical, connection);
+            //command.Parameters.AddWithValue("@ID", userid);
+            //command.Parameters.AddWithValue("@LAT", lat);
+            //command.Parameters.AddWithValue("@LON", lon);
 
-            try
-            {
-                Int32 rowsAffected = command.ExecuteNonQuery();
-                //Console.WriteLine("RowsAffected: {0}", rowsAffected);
-            }
-            catch (Exception ex)
-            {
+            //try
+            //{
+            //    Int32 rowsAffected = command.ExecuteNonQuery();
+            //    //Console.WriteLine("RowsAffected: {0}", rowsAffected);
+            //}
+            //catch (Exception ex)
+            //{
                 
-                throw ex;
-            }
+            //    throw ex;
+            //}
 
         }
 
