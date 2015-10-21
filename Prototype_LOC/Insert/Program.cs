@@ -1,11 +1,13 @@
-﻿using MySql.Data.MySqlClient;
+﻿//using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+//using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using StackExchange.Redis;
 
 namespace Insert
 {
@@ -15,7 +17,8 @@ namespace Insert
      */
     class Program
     {
-        private static MySqlConnection connection;
+
+        private static IDatabase db;
         static string ins_latest = 
             " INSERT INTO `latest_loc` " +
             " (`user_id`, " +
@@ -40,21 +43,25 @@ namespace Insert
         static void Main(string[] args)
         {
             int start = 0;
-            int end = Int32.Parse(args[0]);
-//            if (0 == args.Length)
-//            {
-//                start = 0;
-//            }
-//            else
-//            {
-//                start = Int32.Parse(args[0]);
-//            }
-            while (true)
+            int end;
+            if (0 == args.Length)
             {
-                //Console.WriteLine(DateTime.Now);
+                end = 1;
+            }
+            else
+            {
+                end = Int32.Parse(args[0]);
+            }
+
+            Initialize("10.10.0.93", "phoenix", "phoenix", "password", "3306");
+
+            insert("Pid", 1.030001 , 130.000001);
+
+            while (false)
+            {
+                
                 SW sw = new SW();
                 sw.start();
-//                int end = start + 2500;
 
                 try
                 {
@@ -80,63 +87,36 @@ namespace Insert
 
                 Console.WriteLine(sw.getTime());
 
-                //Console.WriteLine(DateTime.Now);
             }
+
+            String value = db.StringGet("Pid");
+            Console.WriteLine(value); 
             Console.ReadLine();
 
         }
 
         private static void Initialize(string server, string database, string uid, string password, string port)
         {
-            string connectionString = "Data Source=" + server + ";" + "port=" + port + ";" + "Database=" + database + ";" + "User Id=" + uid + ";" + "Password=" + password + ";" + "CharSet = utf8"; ;
-            connection = new MySqlConnection(connectionString);
-            connection.Open();
+            
+
+            //
+            //ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("server1:6379,server2:6379");
+            ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost");
+
+            //
+            db = redis.GetDatabase();
         }
 
         private static void CloseDown() {
-            if (connection != null)
-            {
-                connection.Close();
-                connection = null;
-            }
+           
         }
 
         private static void insert(string userid, double lat, double lon)
         {
-            // latest
-            MySqlCommand command = new MySqlCommand(ins_latest, connection);
-            //command.("@ID", SqlDbType.VarChar);
-            command.Parameters.AddWithValue("@ID", userid);
-            command.Parameters.AddWithValue("@LAT", lat);
-            command.Parameters.AddWithValue("@LON", lon);
+            string value = DateTime.Now.ToString() + lat + lon;
+            db.StringSet(userid, value, flags: CommandFlags.FireAndForget);
 
-            try
-            {
-                Int32 rowsAffected = command.ExecuteNonQuery();
-                //Console.WriteLine("RowsAffected: {0}", rowsAffected);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw ex;
-            }
-
-            //// historical
-            //command = new MySqlCommand(ins_historical, connection);
-            //command.Parameters.AddWithValue("@ID", userid);
-            //command.Parameters.AddWithValue("@LAT", lat);
-            //command.Parameters.AddWithValue("@LON", lon);
-
-            //try
-            //{
-            //    Int32 rowsAffected = command.ExecuteNonQuery();
-            //    //Console.WriteLine("RowsAffected: {0}", rowsAffected);
-            //}
-            //catch (Exception ex)
-            //{
-                
-            //    throw ex;
-            //}
+            
 
         }
 
