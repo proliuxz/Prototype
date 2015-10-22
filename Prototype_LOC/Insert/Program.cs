@@ -113,6 +113,7 @@ namespace Insert
             string value = userid + "|" + DateTime.Now.ToString() + "|" + lat + "|" + lon;
             
             sub.Publish("userLoc", value, flags: CommandFlags.FireAndForget);
+            //sub.Publish("userLoc", value);
         }
 
     }
