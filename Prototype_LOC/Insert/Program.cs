@@ -19,6 +19,7 @@ namespace Insert
     {
         private static ConnectionMultiplexer redis;
         private static IDatabase db;
+        private static ISubscriber sub;
 
         static void Main(string[] args)
         {
@@ -65,6 +66,15 @@ namespace Insert
 
             }
 
+            sub.Subscribe("userLoc", (channel, message) => {
+                Console.WriteLine(message);
+            });
+            
+            
+            publish("Pid" , 1.030001 , 130.000001);
+
+
+
             //String value = db.StringGet("Pid");
             //Console.WriteLine(value); 
             Console.ReadLine();
@@ -81,6 +91,7 @@ namespace Insert
 
             //
             db = redis.GetDatabase();
+            sub = redis.GetSubscriber();
         }
 
         private static void CloseDown() {
@@ -96,7 +107,7 @@ namespace Insert
         private static void publish(string userid, double lat, double lon)
         {
             string value = userid + "|" + DateTime.Now.ToString() + "|" + lat + "|" + lon;
-            ISubscriber sub = redis.GetSubscriber();
+            
             sub.Publish("userLoc", value, flags: CommandFlags.FireAndForget);
         }
 
