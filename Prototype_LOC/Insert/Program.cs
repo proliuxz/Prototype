@@ -23,7 +23,7 @@ namespace Insert
 
         static void Main(string[] args)
         {
-            //int start = 0;
+            int start = Int32.Parse(args[0]);
             int end;
             SW sw = new SW();
             //if (0 == args.Length)
@@ -32,8 +32,10 @@ namespace Insert
             //}
             //else
             //{
-                end = Int32.Parse(args[0]);
+                end = Int32.Parse(args[1]);
             //}
+                Console.WriteLine(start);
+                Console.WriteLine(end);
 
             
             Initialize("10.10.1.36");
@@ -71,7 +73,7 @@ namespace Insert
             //    Console.WriteLine(message);
             //});
             sw.start();
-            for (int i = 0; i < end; i++)
+            for (int i = start; i < end; i++)
             {
                 publish("Pid"+i, 1.030001, 130.000001);
             }
