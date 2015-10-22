@@ -17,28 +17,8 @@ namespace Insert
      */
     class Program
     {
-
+        private static ConnectionMultiplexer redis;
         private static IDatabase db;
-        static string ins_latest = 
-            " INSERT INTO `latest_loc` " +
-            " (`user_id`, " +
-            " `lat`, " +
-            " `lon`) " + 
-            " VALUES " +
-            " (@ID,@LAT,@LON) " +
-            " ON DUPLICATE KEY UPDATE  " +
-            " `lat` = @LAT, " +
-            " `lon` = @LON ";
-
-        static string ins_historical =
-            " INSERT INTO `historical_loc` " +
-            " (`user_id`, " +
-            " `timestamp`, " +
-            " `lat`, " +
-            " `lon`) " +
-            " VALUES " +
-            " (@ID,CURRENT_TIMESTAMP,@LAT,@LON) ";
-
 
         static void Main(string[] args)
         {
@@ -46,16 +26,16 @@ namespace Insert
             int end;
             if (0 == args.Length)
             {
-                end = 1;
+                end = 2500;
             }
             else
             {
                 end = Int32.Parse(args[0]);
             }
 
-            Initialize("10.10.0.93", "phoenix", "phoenix", "password", "3306");
-
-            insert("Pid", 1.030001 , 130.000001);
+            
+            Initialize("10.10.1.36");
+            
 
             while (false)
             {
@@ -65,12 +45,8 @@ namespace Insert
 
                 try
                 {
-                   
-                    Initialize("10.10.0.93", "phoenix", "phoenix", "password", "3306");
-                    
                     for (int i = start; i < end; i++)
                     {
-
                         //insert into latest and historical
                         insert("Pid" + i.ToString(), 1.030001 + i, 130.000001 + i);
                     }
@@ -89,19 +65,19 @@ namespace Insert
 
             }
 
-            String value = db.StringGet("Pid");
-            Console.WriteLine(value); 
+            //String value = db.StringGet("Pid");
+            //Console.WriteLine(value); 
             Console.ReadLine();
 
         }
 
-        private static void Initialize(string server, string database, string uid, string password, string port)
+        private static void Initialize(string server, string port="6379")
         {
             
 
             //
             //ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("server1:6379,server2:6379");
-            ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost");
+            redis = ConnectionMultiplexer.Connect(server + ":" + port);
 
             //
             db = redis.GetDatabase();
@@ -115,9 +91,13 @@ namespace Insert
         {
             string value = DateTime.Now.ToString() + lat + lon;
             db.StringSet(userid, value, flags: CommandFlags.FireAndForget);
+        }
 
-            
-
+        private static void publish(string userid, double lat, double lon)
+        {
+            string value = userid + "|" + DateTime.Now.ToString() + "|" + lat + "|" + lon;
+            ISubscriber sub = redis.GetSubscriber();
+            sub.Publish("userLoc", value, flags: CommandFlags.FireAndForget);
         }
 
     }
