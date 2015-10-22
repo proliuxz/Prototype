@@ -23,58 +23,60 @@ namespace Insert
 
         static void Main(string[] args)
         {
-            int start = 0;
+            //int start = 0;
             int end;
-            if (0 == args.Length)
-            {
-                end = 2500;
-            }
-            else
-            {
+            SW sw = new SW();
+            //if (0 == args.Length)
+            //{
+            //    end = 2500;
+            //}
+            //else
+            //{
                 end = Int32.Parse(args[0]);
-            }
+            //}
 
             
             Initialize("10.10.1.36");
             
 
-            while (false)
-            {
+            //while (false)
+            //{
                 
-                SW sw = new SW();
-                sw.start();
+            //    SW sw = new SW();
+            //    sw.start();
 
-                try
-                {
-                    for (int i = start; i < end; i++)
-                    {
-                        //insert into latest and historical
-                        insert("Pid" + i.ToString(), 1.030001 + i, 130.000001 + i);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-                finally
-                {
-                    CloseDown();
-                }
-                sw.end();
+            //    try
+            //    {
+            //        for (int i = start; i < end; i++)
+            //        {
+            //            //insert into latest and historical
+            //            insert("Pid" + i.ToString(), 1.030001 + i, 130.000001 + i);
+            //        }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Console.WriteLine(e.Message);
+            //    }
+            //    finally
+            //    {
+            //        CloseDown();
+            //    }
+            //    sw.end();
 
-                Console.WriteLine(sw.getTime());
+            //    Console.WriteLine(sw.getTime());
 
+            //}
+
+            //sub.Subscribe("userLoc", (channel, message) => {
+            //    Console.WriteLine(message);
+            //});
+            sw.start();
+            for (int i = 0; i < end; i++)
+            {
+                publish("Pid"+i, 1.030001, 130.000001);
             }
-
-            sub.Subscribe("userLoc", (channel, message) => {
-                Console.WriteLine(message);
-            });
-            
-            
-            publish("Pid" , 1.030001 , 130.000001);
-
-
-
+            sw.end();
+            Console.WriteLine(sw.getTime());
             //String value = db.StringGet("Pid");
             //Console.WriteLine(value); 
             Console.ReadLine();
