@@ -75,15 +75,18 @@ function startsocket() {
                         'marker-color': '#FFFF00',
                         'marker-id': obj.id,
                         'marker-size': 'small'
-                    })
+                    }),
+                    title: obj.role,
+                    alt: obj.id
                 });
             } else if (obj.role == "Zombie") {
                 mk[obj.id] = L.marker([obj.px, obj.py], {
                     icon: L.mapbox.marker.icon({
                         'marker-color': '#FF0000',
-                        'marker-id': obj.id,
                         'marker-size': 'small'
-                    })
+                    }),
+                    title: obj.role,
+                    alt: obj.id
                 });
             } else {
                 mk[obj.id] = L.marker([obj.px, obj.py], {
@@ -91,7 +94,9 @@ function startsocket() {
                         'marker-color': '#00FF00',
                         'marker-id': obj.id,
                         'marker-size': 'small'
-                    })
+                    }),
+                    title: obj.role,
+                    alt: obj.id
                 });
             }
 
@@ -137,7 +142,11 @@ function startsocket() {
                 console.log('****click start****');
                 map.panTo(e.latlng);
                 console.log(e);
+                var id = e.target._icon.alt;
+                console.log(id);
                 console.log('****click end****');
+                $('.nav-tabs a[href="#info"]').tab('show')
+                document.getElementById('info_content').innerHTML = "ID: " + id;
             });
             mk[obj.id].addTo(map);
             
@@ -177,6 +186,57 @@ function removeMovingPoint() {
         console.log("remove");
     }
     mk = new Array();
+}
+
+function addEmegencyPoint() {
+    var marker = L.marker([1.30889, 103.80145], {
+        icon: L.mapbox.marker.icon({
+            'marker-color': '#FF0000',
+            'marker-size': 'large'
+        }),
+        title: "Emergency Call",
+        alt: "20"
+    });
+    marker.on('click', function (e) {
+        console.log('****click start****');
+        map.panTo(e.latlng);
+        console.log(e);
+        var id = e.target._icon.alt;
+        console.log(id);
+        console.log('****click end****');
+        $('.nav-tabs a[href="#emergency"]').tab('show');
+        e.target._icon.classList.remove('blink_me');
+    });
+    marker.addTo(map);
+
+    marker._icon.classList.add('blink_me');
+    
+    var emergency = document.getElementById('emergency');
+    var newItem = emergency.appendChild(document.createElement('div'));
+    newItem.appendChild(document.createElement('hr'));
+    var para = newItem.appendChild(document.createElement('p'));
+    para.innerHTML = "Emergency Call - ID: 20";
+    var btn = document.createElement('button');
+    btn.appendChild(document.createTextNode("Remove"));
+    btn.addEventListener('click', removeEmegencyPoint(),true);
+    newItem.appendChild(btn);
+}
+
+function removeEmegencyPoint() {
+    var layers = map._layers;
+    for (var item in layers) {
+        var marker = layers[item];
+        //console.log(marker);
+        if (marker.options.title == "Emergency Call") {
+            marker._icon.classList.remove("blink_me");
+        }
+    }
+}
+
+function consoleMap() {
+    console.log(map);
+    
+    
 }
 
 function blinkMedicalPoint() {

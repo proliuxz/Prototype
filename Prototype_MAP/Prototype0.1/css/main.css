@@ -7,17 +7,18 @@
     top:0; 
     bottom:10%;
     left:0;
-    width:90%;
+    width:70%;
 }
 
-div.filter {
+div.tabs-panel {
     position: absolute; 
     top:0; 
     right:0;
-    width:10%; 
-    height:100%;
+    width:30%; 
+    height:90%;
     border-left: 1px solid grey;
-    background: lightblue;
+    /*overflow: auto;*/
+    /*background: #4a98d3;*/
 }
 
 div.control {
@@ -25,18 +26,19 @@ div.control {
     top:90%;
     bottom:0;
     left:0;
-    width:90%;
+    width:70%;
     padding:20px;
-    border-top:1px solid grey;
+    border:1px solid grey;
     background:#d3d3d3;
 }
 
 .ui-control {
     background:black;
     position:absolute;
+    top:90%;
     bottom:0;
     right:0px;
-    width: 10%;
+    width: 30%;
     z-index:100;
     color:#ffffff;
 }
@@ -55,6 +57,7 @@ button.control-btn {
     50% { opacity: 0.0; }
 }
 
+/* pure popup css*/
 div.info-overlay {
     position: fixed;
     top: 0;
@@ -81,7 +84,6 @@ div.info-popup {
   position: relative;
   transition: all 5s ease-in-out;
 }
-
 .info-popup h2 {
   margin-top: 0;
   color: #333;
