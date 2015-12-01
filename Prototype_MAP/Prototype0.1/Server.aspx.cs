@@ -7,92 +7,16 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.Script.Serialization;
 using Fleck;
+using StackExchange.Redis;
 
 namespace Prototype0._1
 {
     public partial class Server : System.Web.UI.Page
     {
-        public class Position
-        {
-            public int id;
-            public double px;
-            public double py;
-            public string role;
+        private JavaScriptSerializer serializer = new JavaScriptSerializer();
+        private List<Position> posList = new List<Position>();
+        private List<IWebSocketConnection> allSockets = new List<IWebSocketConnection>();
 
-            public Position(int id, double x, double y)
-            {
-                this.id = id;
-                this.px = x;
-                this.py = y;
-            }
-
-            public void setOccupy(string r)
-            {
-                this.role = r;
-            }
-
-            public void change()
-            {
-                Random ran = new Random();
-                int n = ran.Next();
-                switch(n%9)
-                {
-                    case 0:
-                        {
-                            px = Util.AddDoubleData(px,0.001,3);
-                            py = Util.AddDoubleData(py, 0.001, 3);
-                            break;
-                        }
-                    case 1: 
-                        {
-                            px = Util.AddDoubleData(px, 0.001, 3);
-                            py = Util.MinDoubleData(py, 0.001, 3);
-                            break;
-                        }
-
-                    case 2:
-                        {
-                            px = Util.MinDoubleData(px, 0.001, 3);
-                            py = Util.AddDoubleData(py, 0.001, 3);
-                            break;
-                        }
-                    case 3:
-                        {
-                            px = Util.MinDoubleData(px, 0.001, 3);
-                            py = Util.MinDoubleData(py, 0.001, 3);
-                            break;
-                        }
-                    case 4:
-                        {
-                            px = Util.AddDoubleData(px, 0.001, 3);
-                            break;
-                        }
-                    case 5:
-                        {
-                            py = Util.AddDoubleData(py, 0.001, 3);
-                            break;
-                        }
-
-                    case 6:
-                        {
-                            px = Util.MinDoubleData(px, 0.001, 3);
-                            break;
-                        }
-                    case 7:
-                        {
-                            py = Util.MinDoubleData(py, 0.001, 3);
-                            break;
-                        }
-                    case 8:{
-                        break;
-                    }
-                }
-
-            }
-           
-        }
-        
-        
         protected void Page_Load(object sender, EventArgs e)
         {
             
@@ -101,7 +25,7 @@ namespace Prototype0._1
         protected void Start_Click(object sender, EventArgs e)
         {
             FleckLog.Level = LogLevel.Debug;
-            List<IWebSocketConnection> allSockets = new List<IWebSocketConnection>();
+            
             WebSocketServer server = new WebSocketServer("ws://127.0.0.1:8181");
             server.Start(socket =>
             {
@@ -119,15 +43,40 @@ namespace Prototype0._1
                 };
             });
 
-            List<Position> posList = new List<Position>();
-            for (int i = 0; i < 100; i++)
+            ReceiveMessageDelegate cb = ReceiveMessageCallback;
+
+            RedisService.Initialize("127.0.0.1");
+            RedisService.Subscribe(cb);
+            definePostitionList(80);
+
+            while (true)
+            {
+                foreach(var pos in posList)
+                {
+                    pos.change();
+                    var json = serializer.Serialize(pos);
+                    Console.WriteLine(json);
+                    String input = json;
+                    foreach (var socket in allSockets.ToList())
+                    {
+                        //socket.Send(input);
+                        RedisService.publish(input);
+                    }
+                    
+                }
+                Thread.Sleep(3000);
+            }
+        }
+        private void definePostitionList(int size) 
+        {
+            for (int i = 0; i < size; i++)
             {
                 var pos = new Position(i, 1.306, 103.770);
-                if (i <= 20)
+                if (i%3==0)
                 {
                     pos.setOccupy("Staff");
                 }
-                else if( i > 20 && i < 80)
+                else if (i % 3 == 1)
                 {
                     pos.setOccupy("Survival");
                 }
@@ -135,27 +84,25 @@ namespace Prototype0._1
                 {
                     pos.setOccupy("Zombie");
                 }
-                 
+
                 posList.Add(pos);
             }
+        }
 
-            while (true)
+        
+
+        public void ReceiveMessageCallback(String msg)
+        {
+            foreach (var socket in allSockets.ToList())
             {
-                foreach(var pos in posList)
-                {
-                    pos.change();
-                    var json = new JavaScriptSerializer().Serialize(pos);
-                    Console.WriteLine(json);
-                    String input = json;
-                    foreach (var socket in allSockets.ToList())
-                    {
-                        socket.Send(input);
-                    }
-                }
-                Thread.Sleep(3000);
+                socket.Send(msg);
             }
         }
+
+        
+
     }
 
+    public delegate void ReceiveMessageDelegate(String msg);
 
 }
