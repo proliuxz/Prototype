@@ -43,5 +43,8 @@ Temporary Items
 .apdisk
 
 Prototype_LOC/Insert/bin
+Prototype_LOC/Insert/obj
+Prototype_LOC/Read/bin
+Prototype_LOC/Read/obj
 Prototype_MAP/Prototype0.1/bin
 Prototype_MAP/Prototype0.1/obj
