@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using System.Web.Script.Serialization;
+using StackExchange.Redis;
 
 namespace Read
 {
@@ -15,101 +16,119 @@ namespace Read
      **/
     class Program
     {
-        private MySqlConnection connection;
-        private string server;
-        private string database;
-        private string uid;
-        private string password;
-        private string port;
 
-        public void Initialize(string server, string database, string uid, string password, string port)
+        private static ConnectionMultiplexer redis;
+        private static IDatabase db;
+        private static ISubscriber sub;
+
+        //private MySqlConnection connection;
+        //private string server;
+        //private string database;
+        //private string uid;
+        //private string password;
+        //private string port;
+
+        //public void initialize(string server, string database, string uid, string password, string port)
+        //{
+        //    server = "localhost";
+        //    database = "connectcsharptomysql";
+        //    uid = "username";
+        //    password = "password";  
+        //    this.server = server;
+        //    this.uid = uid;
+        //    this.password = password;
+        //    this.port = port;
+        //    this.database = database;
+        //    string connectionstring = "data source=" + server + ";" + "port=" + port + ";" + "database=" + database + ";" + "user id=" + uid + ";" + "password=" + password + ";" + "charset = utf8";
+        //    connection = new mysqlconnection(connectionstring);
+        //}
+
+        private static void Initialize(string server, string port = "6379")
         {
-            //server = "localhost";  
-            //database = "connectcsharptomysql";  
-            //uid = "username";  
-            //password = "password";  
-            this.server = server;
-            this.uid = uid;
-            this.password = password;
-            this.port = port;
-            this.database = database;
-            string connectionString = "Data Source=" + server + ";" + "port=" + port + ";" + "Database=" + database + ";" + "User Id=" + uid + ";" + "Password=" + password + ";" + "CharSet = utf8";
-            connection = new MySqlConnection(connectionString);
+
+
+            //
+            //ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("server1:6379,server2:6379");
+            redis = ConnectionMultiplexer.Connect(server + ":" + port);
+
+            //
+            db = redis.GetDatabase();
+            sub = redis.GetSubscriber();
         }
 
-        public bool OpenConnection()
-        {
-            try
-            {
-                connection.Open();
-                return true;
-            }
-            catch (MySqlException ex)
-            {  
-                switch (ex.Number)
-                {
-                    case 0:
-                        break;
+        //public bool OpenConnection()
+        //{
+        //    try
+        //    {
+        //        connection.Open();
+        //        return true;
+        //    }
+        //    catch (MySqlException ex)
+        //    {  
+        //        switch (ex.Number)
+        //        {
+        //            case 0:
+        //                break;
 
-                    case 1045:
-                        break;
-                }
-                return false;
-            }
-        }
+        //            case 1045:
+        //                break;
+        //        }
+        //        return false;
+        //    }
+        //}
 
 
-        public bool CloseConnection()
-        {
-            try
-            {
-                connection.Close();
-                return true;
-            }
-            catch (MySqlException ex)
-            {
+        //public bool CloseConnection()
+        //{
+        //    try
+        //    {
+        //        connection.Close();
+        //        return true;
+        //    }
+        //    catch (MySqlException ex)
+        //    {
     
-                return false;
-            }
-        }
+        //        return false;
+        //    }
+        //}
 
-        public List<Loc> Select()
-        {
-            string query = "SELECT * FROM latest_loc";
+        //public List<Loc> Select()
+        //{
+        //    string query = "SELECT * FROM latest_loc";
 
-            //Create a list to store the result  
-            List<Loc> list = new List<Loc>();
+        //    //Create a list to store the result  
+        //    List<Loc> list = new List<Loc>();
  
-            //Open connection  
-            if (this.OpenConnection() == true)
-            {
-                //Create Command  
-                MySqlCommand cmd = new MySqlCommand(query, connection);
-                //Create a data reader and Execute the command  
-                MySqlDataReader dataReader = cmd.ExecuteReader();
+        //    //Open connection  
+        //    if (this.OpenConnection() == true)
+        //    {
+        //        //Create Command  
+        //        MySqlCommand cmd = new MySqlCommand(query, connection);
+        //        //Create a data reader and Execute the command  
+        //        MySqlDataReader dataReader = cmd.ExecuteReader();
 
-                //Read the data and store them in the list  
-                while (dataReader.Read())
-                {
-                    String user_id =(String) dataReader["user_id"];
-                    double lat = (double)dataReader["lat"];
-                    double lon = (double)dataReader["lon"];
-                    DateTime timestamp = (DateTime)dataReader["timestamp"];
-                    Loc loc = new Loc(user_id, lat,lon,timestamp);
-                    list.Add(loc);
-                }
-                //close Data Reader  
-                dataReader.Close();
-                //close Connection  
-                this.CloseConnection();
-                //return list to be displayed  
-                return list;
-            }
-            else
-            {
-               return list;
-            }
-        }
+        //        //Read the data and store them in the list  
+        //        while (dataReader.Read())
+        //        {
+        //            String user_id =(String) dataReader["user_id"];
+        //            double lat = (double)dataReader["lat"];
+        //            double lon = (double)dataReader["lon"];
+        //            DateTime timestamp = (DateTime)dataReader["timestamp"];
+        //            Loc loc = new Loc(user_id, lat,lon,timestamp);
+        //            list.Add(loc);
+        //        }
+        //        //close Data Reader  
+        //        dataReader.Close();
+        //        //close Connection  
+        //        this.CloseConnection();
+        //        //return list to be displayed  
+        //        return list;
+        //    }
+        //    else
+        //    {
+        //       return list;
+        //    }
+        //}
 
 
 
@@ -117,24 +136,33 @@ namespace Read
         {
             SW sw = new SW();
             Program program = new Program();
-            while (true)
-            {
-                sw.start();
-                program.Initialize("10.10.0.93", "phoenix", "phoenix", "password", "3306");
-                List<Loc> result = program.Select();
-                //Console.WriteLine(DateTime.Now.ToString());
-                foreach (Loc loc in result)
+            Initialize("10.10.1.36");
+            int numberOfMsg = 0;
+            //while (true)
+            //{
+                //sw.start();
+                //program.Initialize("10.10.0.93", "phoenix", "phoenix", "password", "3306");
+                //List<Loc> result = program.Select();
+               
+                //foreach (Loc loc in result)
+                //{
+                //    Console.WriteLine(loc.user_id + ";" + loc.lat + ";" + loc.lon + ";" + loc.dt.ToString());
+                //}
+                //program.CloseConnection();
+                //sw.end();
+                //Console.WriteLine(sw.getTime());
+                //sw.reset();
+                //program.CloseConnection();
+                //System.Threading.Thread.Sleep(5000);
+                sub.Subscribe("userLoc", (channel, message) =>
                 {
-                    //Console.WriteLine(loc.user_id + ";" + loc.lat + ";" + loc.lon + ";" + loc.dt.ToString());
-                }
-                //Console.WriteLine(DateTime.Now.ToString());
-                program.CloseConnection();
-                sw.end();
-                Console.WriteLine(sw.getTime());
-                sw.reset();
-                program.CloseConnection();
-                System.Threading.Thread.Sleep(5000);
-            }
+                    Console.WriteLine(message);
+                    numberOfMsg++;
+                    Console.WriteLine(numberOfMsg);
+                });
+                
+            //}
+
             Console.ReadKey();
         }
     }

@@ -4,3 +4,6 @@ D:\Prototype\Prototype_LOC\Read\bin\Debug\Read.pdb
 D:\Prototype\Prototype_LOC\Read\bin\Debug\MySql.Data.dll
 D:\Prototype\Prototype_LOC\Read\obj\Debug\Read.exe
 D:\Prototype\Prototype_LOC\Read\obj\Debug\Read.pdb
+D:\Prototype\Prototype_LOC\Read\bin\Debug\StackExchange.Redis.dll
+D:\Prototype\Prototype_LOC\Read\bin\Debug\StackExchange.Redis.pdb
+D:\Prototype\Prototype_LOC\Read\bin\Debug\StackExchange.Redis.xml

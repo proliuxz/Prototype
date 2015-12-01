@@ -1,11 +1,13 @@
-﻿using MySql.Data.MySqlClient;
+﻿//using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+//using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using StackExchange.Redis;
 
 namespace Insert
 {
@@ -15,129 +17,103 @@ namespace Insert
      */
     class Program
     {
-        private static MySqlConnection connection;
-        static string ins_latest = 
-            " INSERT INTO `latest_loc` " +
-            " (`user_id`, " +
-            " `lat`, " +
-            " `lon`) " + 
-            " VALUES " +
-            " (@ID,@LAT,@LON) " +
-            " ON DUPLICATE KEY UPDATE  " +
-            " `lat` = @LAT, " +
-            " `lon` = @LON ";
-
-        static string ins_historical =
-            " INSERT INTO `historical_loc` " +
-            " (`user_id`, " +
-            " `timestamp`, " +
-            " `lat`, " +
-            " `lon`) " +
-            " VALUES " +
-            " (@ID,CURRENT_TIMESTAMP,@LAT,@LON) ";
-
+        private static ConnectionMultiplexer redis;
+        private static IDatabase db;
+        private static ISubscriber sub;
 
         static void Main(string[] args)
         {
-            int start = 0;
-            int end = Int32.Parse(args[0]);
-//            if (0 == args.Length)
-//            {
-//                start = 0;
-//            }
-//            else
-//            {
-//                start = Int32.Parse(args[0]);
-//            }
-            while (true)
+            int start = Int32.Parse(args[0]);
+            int end;
+            SW sw = new SW();
+            //if (0 == args.Length)
+            //{
+            //    end = 2500;
+            //}
+            //else
+            //{
+                end = Int32.Parse(args[1]);
+            //}
+                Console.WriteLine(start);
+                Console.WriteLine(end);
+
+            
+            Initialize("10.10.1.36");
+            
+
+            //while (false)
+            //{
+                
+            //    SW sw = new SW();
+            //    sw.start();
+
+            //    try
+            //    {
+            //        for (int i = start; i < end; i++)
+            //        {
+            //            //insert into latest and historical
+            //            insert("Pid" + i.ToString(), 1.030001 + i, 130.000001 + i);
+            //        }
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Console.WriteLine(e.Message);
+            //    }
+            //    finally
+            //    {
+            //        CloseDown();
+            //    }
+            //    sw.end();
+
+            //    Console.WriteLine(sw.getTime());
+
+            //}
+
+            //sub.Subscribe("userLoc", (channel, message) => {
+            //    Console.WriteLine(message);
+            //});
+            sw.start();
+            for (int i = start; i < end; i++)
             {
-                //Console.WriteLine(DateTime.Now);
-                SW sw = new SW();
-                sw.start();
-//                int end = start + 2500;
-
-                try
-                {
-                   
-                    Initialize("10.10.0.93", "phoenix", "phoenix", "password", "3306");
-                    
-                    for (int i = start; i < end; i++)
-                    {
-
-                        //insert into latest and historical
-                        insert("Pid" + i.ToString(), 1.030001 + i, 130.000001 + i);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-                finally
-                {
-                    CloseDown();
-                }
-                sw.end();
-
-                Console.WriteLine(sw.getTime());
-
-                //Console.WriteLine(DateTime.Now);
+                publish("Pid"+i, 1.030001, 130.000001);
             }
+            sw.end();
+            Console.WriteLine(sw.getTime());
+            //String value = db.StringGet("Pid");
+            //Console.WriteLine(value); 
             Console.ReadLine();
 
         }
 
-        private static void Initialize(string server, string database, string uid, string password, string port)
+        private static void Initialize(string server, string port="6379")
         {
-            string connectionString = "Data Source=" + server + ";" + "port=" + port + ";" + "Database=" + database + ";" + "User Id=" + uid + ";" + "Password=" + password + ";" + "CharSet = utf8"; ;
-            connection = new MySqlConnection(connectionString);
-            connection.Open();
+            
+
+            //
+            //ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("server1:6379,server2:6379");
+            redis = ConnectionMultiplexer.Connect(server + ":" + port);
+
+            //
+            db = redis.GetDatabase();
+            sub = redis.GetSubscriber();
         }
 
         private static void CloseDown() {
-            if (connection != null)
-            {
-                connection.Close();
-                connection = null;
-            }
+           
         }
 
         private static void insert(string userid, double lat, double lon)
         {
-            // latest
-            MySqlCommand command = new MySqlCommand(ins_latest, connection);
-            //command.("@ID", SqlDbType.VarChar);
-            command.Parameters.AddWithValue("@ID", userid);
-            command.Parameters.AddWithValue("@LAT", lat);
-            command.Parameters.AddWithValue("@LON", lon);
+            string value = DateTime.Now.ToString() + lat + lon;
+            db.StringSet(userid, value, flags: CommandFlags.FireAndForget);
+        }
 
-            try
-            {
-                Int32 rowsAffected = command.ExecuteNonQuery();
-                //Console.WriteLine("RowsAffected: {0}", rowsAffected);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw ex;
-            }
-
-            //// historical
-            //command = new MySqlCommand(ins_historical, connection);
-            //command.Parameters.AddWithValue("@ID", userid);
-            //command.Parameters.AddWithValue("@LAT", lat);
-            //command.Parameters.AddWithValue("@LON", lon);
-
-            //try
-            //{
-            //    Int32 rowsAffected = command.ExecuteNonQuery();
-            //    //Console.WriteLine("RowsAffected: {0}", rowsAffected);
-            //}
-            //catch (Exception ex)
-            //{
-                
-            //    throw ex;
-            //}
-
+        private static void publish(string userid, double lat, double lon)
+        {
+            string value = userid + "|" + DateTime.Now.ToString() + "|" + lat + "|" + lon;
+            
+            sub.Publish("userLoc", value, flags: CommandFlags.FireAndForget);
+            //sub.Publish("userLoc", value);
         }
 
     }
