@@ -205,7 +205,7 @@ function addEmegencyPoint() {
         console.log(id);
         console.log('****click end****');
         $('.nav-tabs a[href="#emergency"]').tab('show');
-        e.target._icon.classList.remove('blink_me');
+        //e.target._icon.classList.remove('blink_me');
     });
     marker.addTo(map);
 
@@ -217,8 +217,9 @@ function addEmegencyPoint() {
     var para = newItem.appendChild(document.createElement('p'));
     para.innerHTML = "Emergency Call - ID: 20";
     var btn = document.createElement('button');
-    btn.appendChild(document.createTextNode("Remove"));
-    btn.addEventListener('click', removeEmegencyPoint(),true);
+    btn.appendChild(document.createTextNode("Solved"));
+    btn.addEventListener('click', removeEmegencyPoint);
+    //btn.on('click', removeEmegencyPoint);
     newItem.appendChild(btn);
 }
 
