@@ -17,12 +17,18 @@ namespace Prototype0._1
             public int id;
             public double px;
             public double py;
+            public string role;
 
             public Position(int id, double x, double y)
             {
                 this.id = id;
                 this.px = x;
                 this.py = y;
+            }
+
+            public void setOccupy(string r)
+            {
+                this.role = r;
             }
 
             public void change()
@@ -117,6 +123,19 @@ namespace Prototype0._1
             for (int i = 0; i < 100; i++)
             {
                 var pos = new Position(i, 1.306, 103.770);
+                if (i <= 20)
+                {
+                    pos.setOccupy("Staff");
+                }
+                else if( i > 20 && i < 80)
+                {
+                    pos.setOccupy("Survival");
+                }
+                else
+                {
+                    pos.setOccupy("Zombie");
+                }
+                 
                 posList.Add(pos);
             }
 
@@ -133,7 +152,7 @@ namespace Prototype0._1
                         socket.Send(input);
                     }
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(3000);
             }
         }
     }

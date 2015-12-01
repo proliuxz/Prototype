@@ -18,13 +18,19 @@
         <button type="button" class="control-btn" onclick="removeMovingPoint()">Stop Tracking</button>
         <button type="button" class="control-btn" onclick="blinkMedicalPoint()">Medical Point Blinking</button>
         <button type="button" class="control-btn" onclick="stopBlinking()">Stop Blinking</button>
-        
+        <button class="control-btn" onclick="location.href='#infoBox'">Information Box</button>
     </div>
     <div id='output' class='ui-control'>
         Click: <code id='click'></code><br />
         Mousemove: <code id='mousemove'></code><br />
     </div>
-
+    <div id="infoBox" class="info-overlay">
+        <div class="info-popup">
+            <h2>INFORMATION BOX</h2>
+            <a class="close" href="#">&times;</a>
+            <div class="content"></div>
+        </div>
+    </div>
     <script src="js/main.js"></script>
 </body>
 </html>

@@ -69,12 +69,42 @@ function startsocket() {
     ws.onmessage = function (evt) {
         var obj = eval('(' + evt.data + ')');
         if (mk[obj.id] == null) {
-            mk[obj.id] = L.marker([obj.px, obj.py], {
-                icon: L.mapbox.marker.icon({
-                    'marker-color': '#f86767',
-                    'marker-id': obj.id
-                })
-            });
+            if (obj.role == "Staff") {
+                mk[obj.id] = L.marker([obj.px, obj.py], {
+                    icon: L.mapbox.marker.icon({
+                        'marker-color': '#FFFF00',
+                        'marker-id': obj.id,
+                        'marker-size': 'small'
+                    })
+                });
+            } else if (obj.role == "Zombie") {
+                mk[obj.id] = L.marker([obj.px, obj.py], {
+                    icon: L.mapbox.marker.icon({
+                        'marker-color': '#FF0000',
+                        'marker-id': obj.id,
+                        'marker-size': 'small'
+                    })
+                });
+            } else {
+                mk[obj.id] = L.marker([obj.px, obj.py], {
+                    icon: L.mapbox.marker.icon({
+                        'marker-color': '#00FF00',
+                        'marker-id': obj.id,
+                        'marker-size': 'small'
+                    })
+                });
+            }
+
+            //one way to create marker using leaf
+            //mk[obj.id] = L.marker([obj.px, obj.py], {
+            //    icon: L.mapbox.marker.icon({
+            //        'marker-color': '#f86767',
+            //        'marker-id': obj.id,
+            //        'marker-size': 'small'
+            //    })
+            //});
+
+            //other way to create marker
             //mk[obj.id] = L.mapbox.featureLayer({
             //    // this feature is in the GeoJSON format: see geojson.org
             //    // for the full specification
@@ -103,6 +133,12 @@ function startsocket() {
             //mk[obj.id].addEventListener("click", function () {
             //    console.log(this);
             //});
+            mk[obj.id].on('click', function (e) {
+                console.log('****click start****');
+                map.panTo(e.latlng);
+                console.log(e);
+                console.log('****click end****');
+            });
             mk[obj.id].addTo(map);
             
             console.log("add");
