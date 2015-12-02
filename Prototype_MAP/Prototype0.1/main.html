@@ -13,6 +13,8 @@
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </head>
 <body>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-minimap/v1.0.0/Control.MiniMap.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-minimap/v1.0.0/Control.MiniMap.css' rel='stylesheet' />
     <div class="map" id="map"></div>
     <div class="tabs-panel">
         <ul class="nav nav-tabs">
@@ -41,6 +43,7 @@
             <div id="emergency" class="tab-pane fade">
                 <h3>Emergency Tracking</h3>
                 <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+                <div id="emergency_content"></div>
             </div>
         </div>
     </div>

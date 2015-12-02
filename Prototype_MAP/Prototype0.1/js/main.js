@@ -10,7 +10,10 @@ function loadMap() {
         legendControl: {
             position: 'topright'
         }
-    }).setView([1.31537, 103.81222], 16);
+    }).setView([1.31537, 103.81222], 16).on('ready', function () {
+        new L.Control.MiniMap(L.mapbox.tileLayer('mapbox.streets'))
+            .addTo(map);
+    });
 
 
     var click = document.getElementById('click'),
@@ -71,30 +74,52 @@ function startsocket() {
         if (mk[obj.id] == null) {
             if (obj.role == "Staff") {
                 mk[obj.id] = L.marker([obj.px, obj.py], {
-                    icon: L.mapbox.marker.icon({
-                        'marker-color': '#FFFF00',
-                        'marker-id': obj.id,
-                        'marker-size': 'small'
+                    icon: L.icon({
+                        "iconUrl": "/img/circle_blue.png",
+                        "iconSize": [16, 16], // size of the icon
+                        "iconAnchor": [8, 8], // point of the icon which will correspond to marker's location
+                        "popupAnchor": [0, -8], // point from which the popup should open relative to the iconAnchor
+                        //"className": "dot"
                     }),
+
+                    //    L.mapbox.marker.icon({
+                    //    'marker-color': '#FFFF00',
+                    //    'marker-id': obj.id,
+                    //    'marker-size': 'small'
+                    //}),
                     title: obj.role,
                     alt: obj.id
                 });
             } else if (obj.role == "Zombie") {
                 mk[obj.id] = L.marker([obj.px, obj.py], {
-                    icon: L.mapbox.marker.icon({
-                        'marker-color': '#FF0000',
-                        'marker-size': 'small'
+                    icon: L.icon({
+                        "iconUrl": "/img/circle_red.png",
+                        "iconSize": [16, 16], // size of the icon
+                        "iconAnchor": [8, 8], // point of the icon which will correspond to marker's location
+                        "popupAnchor": [0, -8], // point from which the popup should open relative to the iconAnchor
+                        //"className": "dot"
                     }),
+                    //    L.mapbox.marker.icon({
+                    //    'marker-color': '#FF0000',
+                    //    'marker-size': 'small'
+                    //}),
                     title: obj.role,
                     alt: obj.id
                 });
             } else {
                 mk[obj.id] = L.marker([obj.px, obj.py], {
-                    icon: L.mapbox.marker.icon({
-                        'marker-color': '#00FF00',
-                        'marker-id': obj.id,
-                        'marker-size': 'small'
+                    icon: L.icon({
+                        "iconUrl": "/img/circle_green.png",
+                        "iconSize": [16, 16], // size of the icon
+                        "iconAnchor": [8, 8], // point of the icon which will correspond to marker's location
+                        "popupAnchor": [0, -8], // point from which the popup should open relative to the iconAnchor
+                        //"className": "dot"
                     }),
+                    //    L.mapbox.marker.icon({
+                    //    'marker-color': '#00FF00',
+                    //    'marker-id': obj.id,
+                    //    'marker-size': 'small'
+                    //}),
                     title: obj.role,
                     alt: obj.id
                 });
@@ -153,10 +178,12 @@ function startsocket() {
             console.log("add");
         }
         else {
-            var latlng = mk[obj.id].getLatLng();
-            latlng.lat = obj.px;
-            latlng.lng = obj.py;
-            mk[obj.id].setLatLng(latlng);
+            //var latlng = mk[obj.id].getLatLng();
+            //latlng.lat = obj.px;
+            //latlng.lng = obj.py;
+            //mk[obj.id].setLatLng(latlng);
+            mk[obj.id].setLatLng(L.latLng(obj.px, obj.py));
+
             //var name = Object.keys(mk[obj.id]._layers)[0];          
             //mk[obj.id]._layers[name]._latlng.lat = obj.px;
             //mk[obj.id]._layers[name]._latlng.lng = obj.py;
@@ -190,10 +217,18 @@ function removeMovingPoint() {
 
 function addEmegencyPoint() {
     var marker = L.marker([1.30889, 103.80145], {
-        icon: L.mapbox.marker.icon({
-            'marker-color': '#FF0000',
-            'marker-size': 'large'
-        }),
+        icon: L.icon({
+            "iconUrl": "/img/emergency.png",
+            "iconSize": [32, 32], // size of the icon
+            "iconAnchor": [16, 16], // point of the icon which will correspond to marker's location
+            "popupAnchor": [0, -16], // point from which the popup should open relative to the iconAnchor
+            //"className": "dot"
+        })
+        //    L.mapbox.marker.icon({
+        //    'marker-color': '#FF0000',
+        //    'marker-size': 'medium'
+        //})
+        ,
         title: "Emergency Call",
         alt: "20"
     });
@@ -211,16 +246,31 @@ function addEmegencyPoint() {
 
     marker._icon.classList.add('blink_me');
     
-    var emergency = document.getElementById('emergency');
+    var emergency = document.getElementById('emergency_content');
     var newItem = emergency.appendChild(document.createElement('div'));
     newItem.appendChild(document.createElement('hr'));
     var para = newItem.appendChild(document.createElement('p'));
     para.innerHTML = "Emergency Call - ID: 20";
-    var btn = document.createElement('button');
-    btn.appendChild(document.createTextNode("Solved"));
-    btn.addEventListener('click', removeEmegencyPoint);
+    var btn1 = document.createElement('button');
+    btn1.appendChild(document.createTextNode("Solved"));
+    btn1.addEventListener('click', stopEmegencyPoint);
     //btn.on('click', removeEmegencyPoint);
-    newItem.appendChild(btn);
+    newItem.appendChild(btn1);
+    var btn2 = document.createElement('button');
+    btn2.appendChild(document.createTextNode("Remove"));
+    btn2.addEventListener('click', removeEmegencyPoint);
+    newItem.appendChild(btn2);
+}
+
+function stopEmegencyPoint() {
+    var layers = map._layers;
+    for (var item in layers) {
+        var marker = layers[item];
+        //console.log(marker);
+        if (marker.options.title == "Emergency Call") {
+            marker._icon.classList.remove("blink_me");
+        }
+    }
 }
 
 function removeEmegencyPoint() {
@@ -229,7 +279,9 @@ function removeEmegencyPoint() {
         var marker = layers[item];
         //console.log(marker);
         if (marker.options.title == "Emergency Call") {
-            marker._icon.classList.remove("blink_me");
+            map.removeLayer(marker);
+            var emergency = document.getElementById('emergency_content');
+            emergency.innerHTML = "";
         }
     }
 }
