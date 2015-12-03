@@ -167,11 +167,12 @@ function startsocket() {
                 console.log('****click start****');
                 map.panTo(e.latlng);
                 console.log(e);
+                var role = e.target._icon.title;
                 var id = e.target._icon.alt;
                 console.log(id);
                 console.log('****click end****');
-                $('.nav-tabs a[href="#info"]').tab('show')
-                document.getElementById('info_content').innerHTML = "ID: " + id;
+                $('.nav-tabs a[href="#info"]').tab('show');
+                document.getElementById('info_content').innerHTML = "Role: " + role + "<br>Bib: #" + id + "<br>Name: Tom<br>Wave: #1<br>Contact Number: 123456<br>Age: 28<br>Gender: Male<br>Medical Info: ...<br>Emergency Contact Person: ...";
             });
             mk[obj.id].addTo(map);
             
@@ -250,19 +251,36 @@ function addEmegencyPoint() {
     var newItem = emergency.appendChild(document.createElement('div'));
     newItem.appendChild(document.createElement('hr'));
     var para = newItem.appendChild(document.createElement('p'));
-    para.innerHTML = "Emergency Call - ID: 20";
+    para.innerHTML = "Emergency Call<br>Staff Name: Judy<br>Staff Contact Number: 234567<br>Emergency Status: Active";
+
+    var btn0 = document.createElement('button');
+    btn0.appendChild(document.createTextNode("locate"));
+    btn0.addEventListener('click', locateEmergencyPoint);
     var btn1 = document.createElement('button');
+    newItem.appendChild(btn0);
     btn1.appendChild(document.createTextNode("Solved"));
-    btn1.addEventListener('click', stopEmegencyPoint);
+    btn1.addEventListener('click', stopEmergencyPoint);
     //btn.on('click', removeEmegencyPoint);
     newItem.appendChild(btn1);
     var btn2 = document.createElement('button');
     btn2.appendChild(document.createTextNode("Remove"));
-    btn2.addEventListener('click', removeEmegencyPoint);
+    btn2.addEventListener('click', removeEmergencyPoint);
     newItem.appendChild(btn2);
+    newItem.appendChild(document.createElement('hr'));
 }
 
-function stopEmegencyPoint() {
+function locateEmergencyPoint() {
+    var layers = map._layers;
+    for (var item in layers) {
+        var marker = layers[item];
+        //console.log(marker);
+        if (marker.options.title == "Emergency Call") {
+            map.panTo(marker.getLatLng());
+        }
+    }
+}
+
+function stopEmergencyPoint() {
     var layers = map._layers;
     for (var item in layers) {
         var marker = layers[item];
@@ -273,7 +291,7 @@ function stopEmegencyPoint() {
     }
 }
 
-function removeEmegencyPoint() {
+function removeEmergencyPoint() {
     var layers = map._layers;
     for (var item in layers) {
         var marker = layers[item];
